@@ -1,0 +1,21 @@
+# Build output and local IDE settings
+**/bin/
+**/obj/
+.vs/
+.idea/
+*.user
+*.suo
+
+# Test output
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# Local SDK, original starter snapshot and downloaded tools
+.local/
+
+# macOS archive metadata
+.DS_Store
+__MACOSX/
+._*
