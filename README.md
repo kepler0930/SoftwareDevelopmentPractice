@@ -33,17 +33,34 @@ dotnet test
 dotnet run --project RecipeManagement.Application -- data/recipes.json
 ```
 
-Until you implement `RecipeManager`, menu options print a **Not implemented** message.
+Console menu options 1–3 now support finding, adding and removing recipes.
+Other menu options still print a **Not implemented** message.
 
 ## Current stage
 
-The supplied starter project has been imported. `RecipeManager` is still the
-original stub; the recipe catalogue, shopping list, cooking plan, history and
-instruction queue will be implemented in later steps.
+The recipe catalogue uses `Dictionary<int, Recipe>` inside `RecipeManager`.
+The constructor checks the initial recipes, and the catalogue supports add,
+find and remove operations. Recipe IDs must be positive and unique, and titles
+must not be blank. Duplicate additions do not replace existing recipes.
 
-The solution builds. The three supplied example tests currently fail because
-the assessed methods have not been implemented. These tests are retained and
-have not been skipped or changed.
+The shopping list, cooking-plan operations, history and instruction queue will
+be implemented in later steps. The cooking-plan field is reserved so catalogue
+removal can reject a recipe that is in the plan once plan operations are added.
+
+Run the catalogue tests:
+
+```bash
+dotnet test --filter "Feature=Catalogue"
+```
+
+The solution builds with no warnings or errors. All 28 catalogue tests pass,
+including the supplied constructor example. The full suite currently reports
+28 passing tests and two failing examples for the unimplemented cooking-plan
+history and instruction-queue features. No tests are skipped.
+
+Console checks loaded all 670 supplied recipes and verified menu options 1–3:
+find an existing recipe, add and find a new recipe, reject a duplicate ID,
+handle a missing ID and remove the added recipe.
 
 Repository: [SoftwareDevelopmentPractice](https://github.com/kepler0930/SoftwareDevelopmentPractice)
 
@@ -52,7 +69,7 @@ PowerShell, it can be used directly:
 
 ```powershell
 & .\.local\dotnet\dotnet.exe build
-& .\.local\dotnet\dotnet.exe test
+& .\.local\dotnet\dotnet.exe test --filter "Feature=Catalogue"
 & .\.local\dotnet\dotnet.exe run --project RecipeManagement.Application -- data/recipes.json
 ```
 

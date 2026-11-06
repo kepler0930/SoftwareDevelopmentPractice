@@ -9,6 +9,8 @@ namespace RecipeManagement.Tests;
 public sealed class RecipeManagerTests
 {
     [Fact]
+    [Trait("Part", "A.1")]
+    [Trait("Feature", "Catalogue")]
     public void Constructor_BuildsRecipeDictionary()
     {
         var manager = CreateManager();
