@@ -29,6 +29,8 @@ public sealed class RecipeManagerTests
     }
 
     [Fact]
+    [Trait("Part", "A.2")]
+    [Trait("Feature", "RemovedHistory")]
     public void RemovedRecipesAreRestoredLastInFirstOut()
     {
         var manager = CreateManager();

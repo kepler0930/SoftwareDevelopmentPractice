@@ -35,6 +35,7 @@ dotnet run --project RecipeManagement.Application -- data/recipes.json
 
 Console menu options 1–6 now support the recipe catalogue and shopping list.
 Options 7, 8 and 11 add, remove and display recipes in the cooking plan.
+Options 9 and 10 inspect the most recent removal and restore it to the plan.
 Other menu options still print a **Not implemented** message.
 
 ## Current stage
@@ -55,18 +56,25 @@ removals push the ID onto the history stack; failed removals leave the history
 unchanged. Reading the plan returns a copy. Planned recipes cannot be removed
 from the catalogue.
 
-History peek/restore and the instruction queue will be implemented in later steps.
+The removed-recipe history uses `Stack<int>`. Peeking reads the top ID without
+removing it. Each restore attempt pops one ID and appends that recipe to the
+plan if it still exists and is not already planned. An invalid entry is consumed
+without trying an older entry in the same call. Empty history returns no ID
+when peeking and `false` when restoring.
 
-Run the completed Part A.1 and cooking-plan tests:
+The instruction queue will be implemented in the next step.
+
+Run the completed Part A.1, cooking-plan and removed-history tests:
 
 ```bash
-dotnet test --filter "Part=A.1|Feature=CookingPlan"
+dotnet test --filter "Part=A.1|Feature=CookingPlan|Feature=RemovedHistory"
 ```
 
 The solution builds with no warnings or errors. All 28 catalogue tests, 15
-shopping-list tests and 19 cooking-plan tests pass, including the supplied
-constructor example. The full suite currently reports 62 passing tests and two
-failing examples for unimplemented history and instruction-queue features.
+shopping-list tests, 19 cooking-plan tests and 13 removed-history tests pass,
+including the supplied constructor and restoration examples. The full suite
+currently reports 75 passing tests and one failing example for the unimplemented
+instruction queue.
 No tests are skipped.
 
 Console checks loaded all 670 supplied recipes and verified menu options 1–3:
@@ -82,6 +90,11 @@ plan, preserve insertion order, reject duplicate or missing IDs, remove a
 planned recipe and handle repeated removal safely. Catalogue deletion is
 blocked while the recipe is planned and succeeds after plan removal.
 
+Removed-history console checks verified options 9 and 10 with an empty history,
+then removed recipe 1 followed by recipe 2. Peeking showed recipe 2 first,
+and successive restores produced plan order 2, 1. Peeking after both restores
+reported an empty history.
+
 Repository: [SoftwareDevelopmentPractice](https://github.com/kepler0930/SoftwareDevelopmentPractice)
 
 This workspace has a local SDK in `.local/dotnet`, excluded from Git. In
@@ -89,7 +102,7 @@ PowerShell, it can be used directly:
 
 ```powershell
 & .\.local\dotnet\dotnet.exe build
-& .\.local\dotnet\dotnet.exe test --filter "Part=A.1|Feature=CookingPlan"
+& .\.local\dotnet\dotnet.exe test --filter "Part=A.1|Feature=CookingPlan|Feature=RemovedHistory"
 & .\.local\dotnet\dotnet.exe run --project RecipeManagement.Application -- data/recipes.json
 ```
 
