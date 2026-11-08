@@ -14,6 +14,7 @@ public sealed class RecipeManager : IRecipeManager
     private readonly List<string> _shoppingList = new List<string>();
     private readonly LinkedList<int> _cookingPlan = new LinkedList<int>();
     private readonly Stack<int> _removedRecipes = new Stack<int>();
+    private readonly Queue<string> _instructions = new Queue<string>();
 
     public RecipeManager(IEnumerable<Recipe> recipes)
     {
@@ -54,7 +55,10 @@ public sealed class RecipeManager : IRecipeManager
         get { return _cookingPlan.Count; }
     }
 
-    public int PendingInstructionCount => 0;
+    public int PendingInstructionCount
+    {
+        get { return _instructions.Count; }
+    }
 
     public int RemovedRecipeCount
     {
@@ -202,14 +206,42 @@ public sealed class RecipeManager : IRecipeManager
         return copy;
     }
 
-    public bool StartCooking(int recipeId) =>
-        throw new NotImplementedException("Part A: implement StartCooking.");
+    public bool StartCooking(int recipeId)
+    {
+        Recipe? recipe = FindRecipe(recipeId);
+        if (recipe == null || recipe.Instructions.Count == 0)
+        {
+            return false;
+        }
 
-    public string? PeekNextInstruction() =>
-        throw new NotImplementedException("Part A: implement PeekNextInstruction.");
+        _instructions.Clear();
+        foreach (string instruction in recipe.Instructions)
+        {
+            _instructions.Enqueue(instruction);
+        }
 
-    public string? CompleteNextInstruction() =>
-        throw new NotImplementedException("Part A: implement CompleteNextInstruction.");
+        return true;
+    }
+
+    public string? PeekNextInstruction()
+    {
+        if (_instructions.Count == 0)
+        {
+            return null;
+        }
+
+        return _instructions.Peek();
+    }
+
+    public string? CompleteNextInstruction()
+    {
+        if (_instructions.Count == 0)
+        {
+            return null;
+        }
+
+        return _instructions.Dequeue();
+    }
 
     public IReadOnlyList<Recipe> SearchByTitle(string searchText) =>
         throw new NotImplementedException("Part B: implement SearchByTitle.");

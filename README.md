@@ -1,6 +1,7 @@
-# Recipe Management System — Student Starter
+# Recipe Management System
 
-Starter repository for Parts A and B. Implement `RecipeManager` in Core; the Application menu and JSON loader are supplied.
+Part A implementation based on the supplied starter repository. The Application
+menu, recipe models, public interface and JSON loader are supplied.
 
 ## What is supplied
 
@@ -36,9 +37,10 @@ dotnet run --project RecipeManagement.Application -- data/recipes.json
 Console menu options 1–6 now support the recipe catalogue and shopping list.
 Options 7, 8 and 11 add, remove and display recipes in the cooking plan.
 Options 9 and 10 inspect the most recent removal and restore it to the plan.
-Other menu options still print a **Not implemented** message.
+Options 12–14 start a cooking session, peek at the next step and complete it.
+Part B options 15–21 still print a **Not implemented** message.
 
-## Current stage
+## Part A implementation
 
 The recipe catalogue uses `Dictionary<int, Recipe>` inside `RecipeManager`.
 The constructor checks the initial recipes, and the catalogue supports add,
@@ -62,20 +64,27 @@ plan if it still exists and is not already planned. An invalid entry is consumed
 without trying an older entry in the same call. Empty history returns no ID
 when peeking and `false` when restoring.
 
-The instruction queue will be implemented in the next step.
+The active cooking session uses `Queue<string>`. Starting an existing recipe
+with instructions replaces the queue with the original strings in order.
+A missing recipe or one with no instructions returns `false` and leaves the
+current queue unchanged. Peeking leaves the next instruction in place;
+completing removes exactly one instruction. Both return `null` for an empty
+queue, and the pending count reflects the number of remaining instructions.
 
-Run the completed Part A.1, cooking-plan and removed-history tests:
+## Validation
+
+Run all Part A tests:
 
 ```bash
-dotnet test --filter "Part=A.1|Feature=CookingPlan|Feature=RemovedHistory"
+dotnet test
 ```
 
 The solution builds with no warnings or errors. All 28 catalogue tests, 15
-shopping-list tests, 19 cooking-plan tests and 13 removed-history tests pass,
-including the supplied constructor and restoration examples. The full suite
-currently reports 75 passing tests and one failing example for the unimplemented
-instruction queue.
-No tests are skipped.
+shopping-list tests, 19 cooking-plan tests, 13 removed-history tests and 15
+instruction-queue tests pass, including all three supplied examples.
+The full suite reports 90 passing tests, no failures and no skipped tests.
+The workflow test checks a recipe across the catalogue, shopping list,
+plan, removal history and instruction queue.
 
 Console checks loaded all 670 supplied recipes and verified menu options 1–3:
 find an existing recipe, add and find a new recipe, reject a duplicate ID,
@@ -95,14 +104,31 @@ then removed recipe 1 followed by recipe 2. Peeking showed recipe 2 first,
 and successive restores produced plan order 2, 1. Peeking after both restores
 reported an empty history.
 
+Instruction-queue console checks verified options 12–14: empty handling,
+repeated peeking without removal, completing one step at a time, preserving
+the current session for a missing recipe, and replacing it with another valid
+recipe. Completing all steps leaves an empty queue.
+
+## Submission
+
 Repository: [SoftwareDevelopmentPractice](https://github.com/kepler0930/SoftwareDevelopmentPractice)
+
+The final Part A version is identified by Git tag `part-a-submission`.
+The submission ZIP contains the solution, source, tests, supplied data and
+documentation. Local tools, build output and Git metadata are excluded;
+development history remains available in the repository.
+
+Part B implementation and the Part B write-up are for the later assignment.
+The supplied Part B placeholders remain in this project.
+
+## Local SDK
 
 This workspace has a local SDK in `.local/dotnet`, excluded from Git. In
 PowerShell, it can be used directly:
 
 ```powershell
 & .\.local\dotnet\dotnet.exe build
-& .\.local\dotnet\dotnet.exe test --filter "Part=A.1|Feature=CookingPlan|Feature=RemovedHistory"
+& .\.local\dotnet\dotnet.exe test
 & .\.local\dotnet\dotnet.exe run --project RecipeManagement.Application -- data/recipes.json
 ```
 

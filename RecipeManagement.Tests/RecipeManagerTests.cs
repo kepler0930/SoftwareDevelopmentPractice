@@ -19,6 +19,8 @@ public sealed class RecipeManagerTests
     }
 
     [Fact]
+    [Trait("Part", "A.2")]
+    [Trait("Feature", "InstructionQueue")]
     public void InstructionsAreCompletedInFileOrder()
     {
         var manager = CreateManager();
