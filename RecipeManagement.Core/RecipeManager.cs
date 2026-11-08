@@ -11,6 +11,7 @@ namespace RecipeManagement.Core;
 public sealed class RecipeManager : IRecipeManager
 {
     private readonly Dictionary<int, Recipe> _recipes = new Dictionary<int, Recipe>();
+    private readonly List<string> _shoppingList = new List<string>();
     private readonly LinkedList<int> _cookingPlan = new LinkedList<int>();
 
     public RecipeManager(IEnumerable<Recipe> recipes)
@@ -42,7 +43,10 @@ public sealed class RecipeManager : IRecipeManager
         get { return _recipes.Count; }
     }
 
-    public int ShoppingItemCount => 0;
+    public int ShoppingItemCount
+    {
+        get { return _shoppingList.Count; }
+    }
 
     public int CookingPlanCount
     {
@@ -99,14 +103,38 @@ public sealed class RecipeManager : IRecipeManager
         return true;
     }
 
-    public int AddIngredientsToShoppingList(int recipeId) =>
-        throw new NotImplementedException("Part A: implement AddIngredientsToShoppingList.");
+    public int AddIngredientsToShoppingList(int recipeId)
+    {
+        Recipe? recipe = FindRecipe(recipeId);
+        if (recipe == null)
+        {
+            return 0;
+        }
 
-    public IReadOnlyList<string> GetShoppingList() =>
-        throw new NotImplementedException("Part A: implement GetShoppingList.");
+        foreach (string ingredient in recipe.Ingredients)
+        {
+            _shoppingList.Add(ingredient);
+        }
 
-    public void ClearShoppingList() =>
-        throw new NotImplementedException("Part A: implement ClearShoppingList.");
+        return recipe.Ingredients.Count;
+    }
+
+    public IReadOnlyList<string> GetShoppingList()
+    {
+        // Return a copy so callers cannot change the internal shopping list.
+        List<string> copy = new List<string>();
+        foreach (string ingredient in _shoppingList)
+        {
+            copy.Add(ingredient);
+        }
+
+        return copy;
+    }
+
+    public void ClearShoppingList()
+    {
+        _shoppingList.Clear();
+    }
 
     public bool AddRecipeToCookingPlan(int recipeId) =>
         throw new NotImplementedException("Part A: implement AddRecipeToCookingPlan.");
