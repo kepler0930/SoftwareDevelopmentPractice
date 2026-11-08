@@ -34,6 +34,7 @@ dotnet run --project RecipeManagement.Application -- data/recipes.json
 ```
 
 Console menu options 1–6 now support the recipe catalogue and shopping list.
+Options 7, 8 and 11 add, remove and display recipes in the cooking plan.
 Other menu options still print a **Not implemented** message.
 
 ## Current stage
@@ -48,21 +49,25 @@ ingredient strings in order, including repeated ingredients. Reading returns a
 copy of the list. Clearing removes the shopping items without changing recipes.
 No quantity parsing or ingredient merging is performed.
 
-Cooking-plan operations, history and the instruction queue will be implemented
-in later steps. The cooking-plan field is reserved so catalogue removal can
-reject a recipe that is in the plan once plan operations are added.
+The cooking plan uses `LinkedList<int>` to keep recipe IDs in the order added.
+Only existing recipes can be added, and duplicate IDs are rejected. Successful
+removals push the ID onto the history stack; failed removals leave the history
+unchanged. Reading the plan returns a copy. Planned recipes cannot be removed
+from the catalogue.
 
-Run the completed Part A.1 tests:
+History peek/restore and the instruction queue will be implemented in later steps.
+
+Run the completed Part A.1 and cooking-plan tests:
 
 ```bash
-dotnet test --filter "Part=A.1"
+dotnet test --filter "Part=A.1|Feature=CookingPlan"
 ```
 
-The solution builds with no warnings or errors. All 28 catalogue tests and 15
-shopping-list tests pass, including the supplied constructor example. The full
-suite currently reports 43 passing tests and two failing examples for the
-unimplemented cooking-plan history and instruction-queue features. No tests
-are skipped.
+The solution builds with no warnings or errors. All 28 catalogue tests, 15
+shopping-list tests and 19 cooking-plan tests pass, including the supplied
+constructor example. The full suite currently reports 62 passing tests and two
+failing examples for unimplemented history and instruction-queue features.
+No tests are skipped.
 
 Console checks loaded all 670 supplied recipes and verified menu options 1–3:
 find an existing recipe, add and find a new recipe, reject a duplicate ID,
@@ -72,6 +77,11 @@ Shopping-list console checks verified options 4–6: add and display the origina
 ingredient lines, leave existing items unchanged for a missing recipe, clear
 the list and add ingredients again after clearing.
 
+Cooking-plan console checks verified options 7, 8 and 11: display an empty
+plan, preserve insertion order, reject duplicate or missing IDs, remove a
+planned recipe and handle repeated removal safely. Catalogue deletion is
+blocked while the recipe is planned and succeeds after plan removal.
+
 Repository: [SoftwareDevelopmentPractice](https://github.com/kepler0930/SoftwareDevelopmentPractice)
 
 This workspace has a local SDK in `.local/dotnet`, excluded from Git. In
@@ -79,7 +89,7 @@ PowerShell, it can be used directly:
 
 ```powershell
 & .\.local\dotnet\dotnet.exe build
-& .\.local\dotnet\dotnet.exe test --filter "Part=A.1"
+& .\.local\dotnet\dotnet.exe test --filter "Part=A.1|Feature=CookingPlan"
 & .\.local\dotnet\dotnet.exe run --project RecipeManagement.Application -- data/recipes.json
 ```
 
